@@ -147,6 +147,7 @@ class HighWatermarkCommand:
         inverted: Optional[bool] = None,
         temporal: bool = False,
         max_memory_records: Optional[int] = None,
+        use_local: bool = False,
     ) -> None:
         try:
             kwargs = {}
@@ -174,6 +175,7 @@ class HighWatermarkCommand:
                         native_traces=reader.metadata.has_native_traces,
                         high_water_mark_by_snapshot=None,
                         inverted=inverted,
+                        use_local=use_local,
                     )
                 else:
                     recs, hwms = reader.get_temporal_high_water_mark_allocation_records(
@@ -185,6 +187,7 @@ class HighWatermarkCommand:
                         native_traces=reader.metadata.has_native_traces,
                         high_water_mark_by_snapshot=hwms,
                         inverted=inverted,
+                        use_local=use_local,
                     )
             else:
                 if show_memory_leaks:
@@ -205,6 +208,7 @@ class HighWatermarkCommand:
                     memory_records=tuple(reader.get_memory_snapshots()),
                     native_traces=reader.metadata.has_native_traces,
                     inverted=inverted,
+                    use_local=use_local,
                 )
         except OSError as e:
             raise MemrayCommandError(
@@ -219,6 +223,7 @@ class HighWatermarkCommand:
                 show_memory_leaks=show_memory_leaks,
                 merge_threads=merge_threads,
                 inverted=inverted,
+                use_local=use_local,
             )
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
@@ -300,6 +305,9 @@ class HighWatermarkCommand:
 
         if hasattr(args, "max_memory_records"):
             kwargs["max_memory_records"] = args.max_memory_records
+
+        if hasattr(args, "use_local"):
+            kwargs["use_local"] = args.use_local
 
         self.write_report(
             result_path,

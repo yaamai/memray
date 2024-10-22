@@ -31,6 +31,7 @@ class TableReporter:
         *,
         memory_records: Iterable[MemorySnapshot],
         native_traces: bool,
+        use_local: bool = False,
         **kwargs: Any,
     ) -> "TableReporter":
         result = []
@@ -65,6 +66,7 @@ class TableReporter:
         show_memory_leaks: bool,
         merge_threads: bool,
         inverted: bool,
+        use_local: bool = False,
     ) -> None:
         if not merge_threads:
             raise NotImplementedError("TableReporter only supports merged threads.")
@@ -80,5 +82,6 @@ class TableReporter:
             show_memory_leaks=show_memory_leaks,
             merge_threads=merge_threads,
             inverted=inverted,
+            use_local=use_local,
         )
         print(html_code, file=outfile)

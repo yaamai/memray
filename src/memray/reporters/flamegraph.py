@@ -152,6 +152,7 @@ class FlameGraphReporter:
         record: RecordData,
         inverted: bool,
         interval_list: List[Tuple[int, Optional[int], int, int, int]],
+        use_local: bool = False,
     ) -> None:
         current_frame_id = 0
         current_frame = frames[0]
@@ -246,6 +247,7 @@ class FlameGraphReporter:
         native_traces: bool,
         temporal: bool,
         inverted: Optional[bool] = None,
+        use_local: bool = False,
     ) -> "FlameGraphReporter":
         inverted = False if inverted is None else inverted
 
@@ -299,6 +301,7 @@ class FlameGraphReporter:
                     record=record_data,
                     inverted=inverted,
                     interval_list=interval_list,
+                    use_local=use_local,
                 )
             else:
                 # inverted flamegraph tree with all nodes
@@ -309,6 +312,7 @@ class FlameGraphReporter:
                     record=record_data,
                     inverted=inverted,
                     interval_list=interval_list,
+                    use_local=use_local,
                 )
 
                 # inverted flamegraph tree without import system nodes
@@ -319,6 +323,7 @@ class FlameGraphReporter:
                     record=record_data,
                     inverted=inverted,
                     interval_list=no_imports_interval_list,
+                    use_local=use_local,
                 )
 
         all_strings = StringRegistry()
@@ -355,6 +360,7 @@ class FlameGraphReporter:
         memory_records: Iterable[MemorySnapshot],
         native_traces: bool,
         inverted: Optional[bool] = None,
+        use_local: bool = False,
     ) -> "FlameGraphReporter":
         return cls._from_any_snapshot(
             allocations,
@@ -362,6 +368,7 @@ class FlameGraphReporter:
             native_traces=native_traces,
             temporal=False,
             inverted=inverted,
+            use_local=use_local,
         )
 
     @classmethod
@@ -373,6 +380,7 @@ class FlameGraphReporter:
         native_traces: bool,
         high_water_mark_by_snapshot: Optional[List[int]],
         inverted: Optional[bool] = None,
+        use_local: bool = False,
     ) -> "FlameGraphReporter":
         ret = cls._from_any_snapshot(
             allocations,
@@ -380,6 +388,7 @@ class FlameGraphReporter:
             native_traces=native_traces,
             temporal=True,
             inverted=inverted,
+            use_local=use_local,
         )
         ret.data["high_water_mark_by_snapshot"] = high_water_mark_by_snapshot
         return ret
@@ -391,6 +400,7 @@ class FlameGraphReporter:
         show_memory_leaks: bool,
         merge_threads: bool,
         inverted: bool,
+        use_local: bool = False,
     ) -> None:
         kind = "temporal_flamegraph" if "intervals" in self.data else "flamegraph"
         html_code = render_report(
@@ -401,5 +411,6 @@ class FlameGraphReporter:
             show_memory_leaks=show_memory_leaks,
             merge_threads=merge_threads,
             inverted=inverted,
+            use_local=use_local,
         )
         print(html_code, file=outfile)

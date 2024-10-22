@@ -37,6 +37,7 @@ ASSETS_LOCATION = (
 
 class BuildMemray(build_ext_orig):
     def run(self):
+        self.import_node_modules()
         self.build_js_files()
         self.build_libbacktrace()
         super().run()
@@ -86,6 +87,13 @@ class BuildMemray(build_ext_orig):
 
         self.announce_and_run(["npm", "install"])
         self.announce_and_run(["npm", "run-script", "build"])
+    
+    def import_node_modules(self):
+        if os.getenv("USE_LOCAL_JS", "false") == "false":
+            return
+        
+        self.announce_and_run(["npm", "install", "--include=optional"])
+        
 
 
 install_requires = [

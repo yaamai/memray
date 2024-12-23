@@ -444,6 +444,20 @@ class TestFlamegraphSubCommand:
         assert namespace.results == "results.txt"
         assert namespace.output == "output.html"
         assert namespace.force is True
+    
+    def test_use_local_js_flag_parsing(self):
+        # GIVEN
+        _, parser = self.get_prepared_parser()
+
+        # WHEN
+        namespace = parser.parse_args(
+            ["results.txt", "--use-local-js", "--output", "output.html"]
+        )
+
+        # THEN
+        assert namespace.results == "results.txt"
+        assert namespace.output == "output.html"
+        assert namespace.use_local is True
 
 
 @pytest.mark.parametrize(

@@ -6,6 +6,7 @@ from memray import Tracker
 from memray._test import MemoryAllocator
 from memray.reporters.flamegraph import MAX_STACKS
 from memray.reporters.flamegraph import FlameGraphReporter
+from memray.reporters.templates import render_report
 from tests.utils import MockAllocationRecord
 from tests.utils import filter_relevant_allocations
 
@@ -3314,3 +3315,34 @@ class TestFlameGraphReporter:
             "unique_threads": ["0x1"],
             "children": [],
         } == inverted_import_system_tree
+    
+    def test_local_js_injection():
+        peak_allocations = [
+            MockAllocationRecord(
+                tid=1,
+                address=0x1000000,
+                size=1024,
+                allocator=AllocatorType.MALLOC,
+                stack_id=1,
+                n_allocations=1,
+                _stack=[
+                    ("me", "fun.py", 12),
+                    ("parent", "fun.py", 8),
+                    ("grandparent", "fun.py", 4),
+                ],
+            ),
+        ]
+
+        reporter = FlameGraphReporter.from_snapshot(
+            peak_allocations, memory_records=[], native_traces=False
+        )
+
+        html_code = render_report(
+            kind="flamegraph",
+            data=reporter.data,
+            show_memory_leaks=False,
+            inverted=False,
+            use_local=True,
+        )
+
+        assert (html_code.count('script') > 100)

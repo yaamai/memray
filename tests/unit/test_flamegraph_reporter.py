@@ -1,8 +1,10 @@
+from datetime import datetime
 import sys
 
 from memray import AllocatorType
 from memray import FileReader
 from memray import Tracker
+from memray._metadata import Metadata
 from memray._test import MemoryAllocator
 from memray.reporters.flamegraph import MAX_STACKS
 from memray.reporters.flamegraph import FlameGraphReporter
@@ -3340,7 +3342,20 @@ class TestFlameGraphReporter:
         html_code = render_report(
             kind="flamegraph",
             data=reporter.data,
+            metadata=Metadata(
+                start_time=datetime(2023, 1, 1, 1),
+                end_time=datetime(2023, 1, 1, 2),
+                total_frames=10,
+                command_line="fake stats",
+                pid=123456,
+                python_allocator="pymalloc",
+                has_native_traces=False,
+                trace_python_allocators=True,
+                main_thread_id=0x1,
+            ),
             show_memory_leaks=False,
+            memory_records=[],
+            merge_threads=False,
             inverted=False,
             use_local=True,
         )

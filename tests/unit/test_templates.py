@@ -25,35 +25,4 @@ def test_title_for_regular_report(kind, show_memory_leaks, inverted, expected):
         == expected
     )
 
-
-def test_local_js_injection():
-        peak_allocations = [
-            MockAllocationRecord(
-                tid=1,
-                address=0x1000000,
-                size=1024,
-                allocator=AllocatorType.MALLOC,
-                stack_id=1,
-                n_allocations=1,
-                _stack=[
-                    ("me", "fun.py", 12),
-                    ("parent", "fun.py", 8),
-                    ("grandparent", "fun.py", 4),
-                ],
-            ),
-        ]
-
-        reporter = FlameGraphReporter.from_snapshot(
-            peak_allocations, memory_records=[], native_traces=False
-        )
-
-        html_code = render_report(
-            kind="flamegraph",
-            data=reporter.data,
-            show_memory_leaks=False,
-            inverted=False,
-            use_local=True,
-        )
-
-        assert ('<script src=' not in html_code)
         
